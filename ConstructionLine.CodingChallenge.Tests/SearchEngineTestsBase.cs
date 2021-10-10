@@ -6,7 +6,7 @@ namespace ConstructionLine.CodingChallenge.Tests
 {
     public class SearchEngineTestsBase
     {
-        protected static void AssertResults(List<Shirt> shirts, SearchOptions options)
+        protected static void AssertResults(List<Shirt> shirts, SearchOptions options, List<Shirt> originalShirts)
         {
             Assert.That(shirts, Is.Not.Null);
 
@@ -14,10 +14,10 @@ namespace ConstructionLine.CodingChallenge.Tests
             var sizeIds = options.Sizes.Select(s => s.Id).ToList();
             var colorIds = options.Colors.Select(c => c.Id).ToList();
 
-            foreach (var shirt in shirts)
+            foreach (var shirt in originalShirts)
             {
-                if (sizeIds.Contains(shirt.Size.Id)
-                    && colorIds.Contains(shirt.Color.Id)
+                if ((sizeIds.Contains(shirt.Size.Id) || !sizeIds.Any())
+                    && (colorIds.Contains(shirt.Color.Id) || !colorIds.Any())
                     && !resultingShirtIds.Contains(shirt.Id))
                 {
                     Assert.Fail($"'{shirt.Name}' with Size '{shirt.Size.Name}' and Color '{shirt.Color.Name}' not found in results, " +
@@ -39,6 +39,7 @@ namespace ConstructionLine.CodingChallenge.Tests
 
                 var expectedSizeCount = shirts
                     .Count(s => s.Size.Id == size.Id
+                                && (!searchOptions.Sizes.Any() || searchOptions.Sizes.Select(x => x.Id).Contains(size.Id))
                                 && (!searchOptions.Colors.Any() || searchOptions.Colors.Select(c => c.Id).Contains(s.Color.Id)));
 
                 Assert.That(sizeCount.Count, Is.EqualTo(expectedSizeCount), 
@@ -57,7 +58,8 @@ namespace ConstructionLine.CodingChallenge.Tests
                 Assert.That(colorCount, Is.Not.Null, $"Color count for '{color.Name}' not found in results");
 
                 var expectedColorCount = shirts
-                    .Count(c => c.Color.Id == color.Id  
+                    .Count(c => c.Color.Id == color.Id
+                                && (!searchOptions.Colors.Any() || searchOptions.Colors.Select(x => x.Id).Contains(color.Id))
                                 && (!searchOptions.Sizes.Any() || searchOptions.Sizes.Select(s => s.Id).Contains(c.Size.Id)));
 
                 Assert.That(colorCount.Count, Is.EqualTo(expectedColorCount),

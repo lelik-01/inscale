@@ -26,7 +26,7 @@ namespace ConstructionLine.CodingChallenge.Tests
 
             var results = searchEngine.Search(searchOptions);
 
-            AssertResults(results.Shirts, searchOptions);
+            AssertResults(results.Shirts, searchOptions, shirts);
             AssertSizeCounts(shirts, searchOptions, results.SizeCounts);
             AssertColorCounts(shirts, searchOptions, results.ColorCounts);
         }
